@@ -1,20 +1,21 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { csv } from 'd3';
+import React, { Component } from 'react'
+import './App.css'
+import { csv } from 'd3'
+import ElevationChart from './ElevationChart'
 
 class App extends Component {
   
   constructor(props) {
     
-    console.log( 'constructor' );
+    console.log( 'constructor' )
 
-    super(props);
+    super(props)
 
     this.state = {
       data: [],
-      dataColumns: []
-    };
+      dataColumns: [],
+      selectedTrail: null,
+    }
 
     // async - load trail csv data and parse numeric values into ints/floats
     csv(`${process.env.PUBLIC_URL}/trails.csv`, data => {
@@ -23,34 +24,38 @@ class App extends Component {
           try {
             if (!isNaN(row[key])) row[key] = parseFloat(row[key])
           } catch (e) { }
-        });
-      });
+        })
+      })
 
       this.setState({
         data: data,
-        dataColumns: Object.keys(data[0])
-      });
+        dataColumns: Object.keys(data[0]),
+        selectedTrail: data[1]
+      })
 
-    });
+    })
 
   }
 
   componentDidMount() {
     
-    console.log('componentDidMount()');
+    console.log('componentDidMount()')
 
   }
 
   render() {
+    const { selectedTrail } = this.state
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          Woo To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+
+        <ElevationChart
+        selectedTrail={ selectedTrail }
+        style={{
+          position: 'fixed',
+          top: 30,
+          right: 30
+        }} />
+
       </div>
     );
   }

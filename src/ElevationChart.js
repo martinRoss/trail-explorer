@@ -1,44 +1,78 @@
 import React, { Component } from 'react'
 import Styled from 'styled-components'
-import FloatingBox from './FloatingBox'
+import { scaleLinear } from 'd3';
+import { line, curveNatural } from 'd3-shape';
+import colors from './colors'
+import strings from './strings'
 
-// Size of the chart
-const width = 450;
-const height = 200;
+// Width of the outer box
+const width = 400;
+// Box Padding
+const padding = 14;
+// Chart width
+const chartWidth = width - (2 * padding)
+// Height of the chart
+const chartHeight = 80;
 
 /**
- * Creates a styled component that only renders if there is a selected trail
+ * Creates a styled component
  * @param {object} FloatingBox Common component
  * @returns {object} StyledElevationChart Dynamic component
  */
-const StyledElevationChart = styled(FloatingBox)`
-    display: ${props => props.selectedTrail !== null ? 'block' : 'none'}
+const StyledElevationChart = Styled.div`
     box-sizing: border-box;
-    height: ${height}px;
     width: ${width}px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    border-radius: 3px;
+    background-color: ${colors.boxBackground};
+    border: 1px solid ${colors.borderColor};
+    text-align: left;
+    padding: ${padding}px;
 `
 
 /**
- * Pulls out elevation data
+ * Styles the box label
+ * @returns {object} label Styled Label
+ */
+const Label = Styled.div`
+    margin-bottom: 18px;
+    font-size: 1rem;
+`
+
+/**
+ * Pulls out elevation data. Returns empty array if elevation is not available
  * @param {object} selectedTrail The currently selected trail
  * @returns {array} elevationWaypoints
  */
-const pluckElevationData = selectedTrail => selectedTrail.elevation
+const pluckElevationData = selectedTrail =>
+    JSON.parse(selectedTrail.geoJson).features[0].geometry.coordinates.map(coordinate => coordinate[2])
 
 /**
- * Computes elevation range
+ * Computes elevation domain
+ * Uses the spread operator '...' to convert array to argument list
  * @param {array} elevations
- * @returns {array} elevationRange Min and Max of elevations
+ * @returns {array} elevationDomain Min and Max of elevations
  */
-const computeElevationRange = elevations => [Math.min(elevations), Math.max(elevations)]
+const computeElevationDomain = elevations => [Math.min(...elevations), Math.max(...elevations)]
 
 /**
- * Computes waypoint count range. Returns count of waypoints in range form
+ * Computes waypoint count domain. Returns count of waypoints in domain extent format
  * @param {array} waypoints
  * @returns {array} elevationRange Min and Max of elevations
  */
-const computeCountRange = elevations => [1, elevations.length]
+const computeCountDomain = elevations => [1, elevations.length]
 
+/**
+ * X pixel range
+ * @returns {array} xRange
+ */
+const xRange = [0, chartWidth]
+
+/**
+ * y pixel range
+ * @returns {array} yRange
+ */
+const yRange = [0, chartHeight]
 
 /**
  * Renders an interactive Elevation Chart
@@ -46,10 +80,46 @@ const computeCountRange = elevations => [1, elevations.length]
  */
 export default class ElevationChart extends Component {
   render() {
-    const { style, selectedTrail } = this.props
+    // Pull out data and provide defaults
+    const {
+        style,
+        selectedTrail
+    } = this.props
+
+    // If no trail is selected return nothing
+    if (!selectedTrail) return null
+    // Nothing below happens if no trail is selected -- do these checks early for peformance
+
+    // Pluck elevation
+    const elevations = pluckElevationData(selectedTrail)
+
+    // Compute y scale
+    const yScale = scaleLinear()
+        .domain(computeElevationDomain(elevations))
+        .range(yRange)
+
+    // Compute x scale
+    const xScale = scaleLinear()
+        .domain(computeCountDomain(elevations))
+        .range(xRange)
+
+    // Create line function
+    const elevationLineFunc = line()
+        .x((d, index) => xScale(index + 1))
+        .y(d => yScale(d))
+        .curve(curveNatural)
+    
+    // Create line path
+    const elevationLine = elevationLineFunc(elevations) 
+
     return (
       <StyledElevationChart style={ style }>
-        
+          <Label>{ strings.ELEVATION_BOX_LABEL }</Label>
+          <svg height={ chartHeight + 1 } width={ chartWidth }>
+              <g>
+                  <path d={ elevationLine } fill="none" stroke="black" />
+              </g>
+          </svg>
       </StyledElevationChart>
     )
   }
