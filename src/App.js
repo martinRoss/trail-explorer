@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './App.css'
 import { csv } from 'd3'
+import Map from './Map'
 import ElevationChart from './ElevationChart'
 
 class App extends Component {
@@ -47,6 +48,13 @@ class App extends Component {
     const { selectedTrail } = this.state
     return (
       <div className="App">
+
+        <Map 
+          mapTypeId = 'terrain'
+          googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: '100%', width: '100%' ,position: 'absolute' }} />}
+          mapElement={<div style={{ height: `100%` }} /> } />
 
         <ElevationChart
         selectedTrail={ selectedTrail }
