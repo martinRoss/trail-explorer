@@ -46,10 +46,12 @@ class App extends Component {
 
   render() {
     const { selectedTrail } = this.state
+    console.log(this.state.data);
     return (
       <div className="App">
 
         <Map 
+          trails = {this.state.data}
           mapTypeId = 'terrain'
           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
           loadingElement={<div style={{ height: `100%` }} />}
