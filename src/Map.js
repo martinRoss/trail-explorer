@@ -16,12 +16,15 @@ export default Map = withScriptjs(withGoogleMap((props) => {
 				lat: coord[1],
 				lng: coord[0]
 			}
-		});
+        });
+        
+        const setSelectedTrail = () => { props.setSelectedTrail(trail) }
 
 		polylines.push(
 			<Polyline
-				key={'trail-' + index}
-				path={ coodinates } />
+            onClick={ setSelectedTrail } 
+            key={'trail-' + index}
+            path={ coodinates } />
 		)
 		
 	});

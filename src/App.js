@@ -12,11 +12,15 @@ class App extends Component {
 
     super(props)
 
+    // Set initial state
     this.state = {
       data: [],
       dataColumns: [],
       selectedTrail: null,
     }
+
+    // Bind this to instance functions
+    this.setSelectedTrail = this.setSelectedTrail.bind(this)
 
     // async - load trail csv data and parse numeric values into ints/floats
     csv(`${process.env.PUBLIC_URL}/trails.csv`, data => {
@@ -31,7 +35,6 @@ class App extends Component {
       this.setState({
         data: data,
         dataColumns: Object.keys(data[0]),
-        selectedTrail: data[1]
       })
 
     })
@@ -44,6 +47,15 @@ class App extends Component {
 
   }
 
+  /**
+   * Sets root application state.selectedTrail
+   * @param {object} selectedTrail Trail to set as selected
+   * @returns {void}
+   */
+  setSelectedTrail(selectedTrail) {
+    this.setState({ selectedTrail })
+  }
+
   render() {
     const { selectedTrail } = this.state
     console.log(this.state.data);
@@ -51,12 +63,13 @@ class App extends Component {
       <div className="App">
 
         <Map 
-          trails = {this.state.data}
-          mapTypeId = 'terrain'
-          googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
-          loadingElement={<div style={{ height: `100%` }} />}
-          containerElement={<div style={{ height: '100%', width: '100%' ,position: 'absolute' }} />}
-          mapElement={<div style={{ height: `100%` }} /> } />
+        setSelectedTrail={ this.setSelectedTrail }
+        trails = {this.state.data}
+        mapTypeId = 'terrain'
+        googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: '100%', width: '100%' ,position: 'absolute' }} />}
+        mapElement={<div style={{ height: `100%` }} /> } />
 
         <ElevationChart
         selectedTrail={ selectedTrail }
