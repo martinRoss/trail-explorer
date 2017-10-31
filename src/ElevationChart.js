@@ -40,7 +40,7 @@ const Label = Styled.div`
 `
 
 /**
- * Pulls out elevation data. Returns empty array if elevation is not available
+ * Pulls out elevation data.
  * @param {object} selectedTrail The currently selected trail
  * @returns {array} elevationWaypoints
  */
@@ -53,14 +53,16 @@ const pluckElevationData = selectedTrail =>
  * @param {array} elevations
  * @returns {array} elevationDomain Min and Max of elevations
  */
-const computeElevationDomain = elevations => [Math.min(...elevations), Math.max(...elevations)]
+const computeElevationDomain = elevations =>
+    [Math.min(...elevations), Math.max(...elevations)]
 
 /**
  * Computes waypoint count domain. Returns count of waypoints in domain extent format
  * @param {array} waypoints
  * @returns {array} elevationRange Min and Max of elevations
  */
-const computeCountDomain = elevations => [1, elevations.length]
+const computeCountDomain = elevations =>
+    [1, elevations.length]
 
 /**
  * X pixel range
@@ -75,6 +77,14 @@ const xRange = [0, chartWidth]
 const yRange = [0, chartHeight]
 
 /**
+ * Grab the x offset relative to the node from a hover event
+ * @param {event} event Hover event
+ * @returns {number} x pixel coordinate
+ */
+const grabRelativeXHover = event =>
+    event.pageX - event.currentTarget.getBoundingClientRect().x
+
+/**
  * Renders an interactive Elevation Chart
  * @extends Component
  */
@@ -83,7 +93,8 @@ export default class ElevationChart extends Component {
     // Pull out data and provide defaults
     const {
         style,
-        selectedTrail
+        selectedTrail,
+        onMouseMove
     } = this.props
 
     // If no trail is selected return nothing
@@ -112,12 +123,29 @@ export default class ElevationChart extends Component {
     // Create line path
     const elevationLine = elevationLineFunc(elevations) 
 
+    // Create function to reverse lookup x index from hover interaction
+    const getIndexFromHover = x =>
+        Math.ceil(xScale.invert(x))
+
+    // Function to send index up to parent
+    // Pluck the x hover, get the index and then send it up
+    const sendSelectedTrailHoverIndex = event =>
+        onMouseMove(getIndexFromHover(grabRelativeXHover(event)))
+
+
     return (
       <StyledElevationChart style={ style }>
           <Label>{ strings.ELEVATION_BOX_LABEL }</Label>
           <svg height={ chartHeight + 1 } width={ chartWidth }>
               <g>
                   <path d={ elevationLine } fill="none" stroke="black" />
+
+                  <rect
+                  height={ chartHeight }
+                  width={ chartWidth }
+                  onMouseMove={ sendSelectedTrailHoverIndex }
+                  style={{ pointerEvents: 'all', fill: 'none', stroke: 'none' }} />
+
               </g>
           </svg>
       </StyledElevationChart>

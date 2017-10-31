@@ -48,6 +48,15 @@ class App extends Component {
   }
 
   /**
+   * Returns the index of the waypoint that corresponds to the
+   * location the mouse is hovering over on the elevation chart
+   * @param {number} index Index of waypoint in currently selected track
+   */
+  hoveredIndex(index) {
+    console.log('Hover index -- ', index)
+  }
+
+  /**
    * Sets root application state.selectedTrail
    * @param {object} selectedTrail Trail to set as selected
    * @returns {void}
@@ -72,6 +81,7 @@ class App extends Component {
         mapElement={<div style={{ height: `100%` }} /> } />
 
         <ElevationChart
+        onMouseMove={ this.hoveredIndex }
         selectedTrail={ selectedTrail }
         style={{
           position: 'fixed',
