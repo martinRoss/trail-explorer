@@ -45,7 +45,21 @@ const Label = Styled.div`
  * @returns {array} elevationWaypoints
  */
 const pluckElevationData = selectedTrail =>
-    JSON.parse(selectedTrail.geoJson).features[0].geometry.coordinates.map(coordinate => coordinate[2])
+    JSON.parse(selectedTrail.geoJson)
+        .features[0]
+        .geometry
+        .coordinates
+        .map(coordinate => coordinate[2])
+
+/**
+ * Grab elevation at index
+ * @param {object} selectedTrail The currently selected trail
+ * @param {number} index Index of waypoint
+ * @returns {number} elevation at wapoint
+ */
+const getElevationAtIndex = (selectedTrail, index) =>
+    pluckElevationData(selectedTrail)[index]
+
 
 /**
  * Computes elevation domain
@@ -94,7 +108,8 @@ export default class ElevationChart extends Component {
     const {
         style,
         selectedTrail,
-        onMouseMove
+        onMouseMove,
+        hoveredIndex
     } = this.props
 
     // If no trail is selected return nothing
@@ -132,13 +147,45 @@ export default class ElevationChart extends Component {
     const sendSelectedTrailHoverIndex = event =>
         onMouseMove(getIndexFromHover(grabRelativeXHover(event)))
 
+    // Elevation at hovered index
+    const hoveredElevation = hoveredIndex ? getElevationAtIndex(selectedTrail, hoveredIndex) : null
+
+    // Build circle for current elevation if there is one
+    // null references are not rendered
+    let hoverCircle = null
+    let hoverLine = null
+    if (hoveredElevation) {
+        hoverCircle =
+            <circle
+            cx={ xScale(hoveredIndex) }
+            cy={ yScale(hoveredElevation) }
+            r={ 5 }
+            strokeWidth={ 1 }
+            fill={ colors.boxBackground }
+            stroke={ colors.elevationHighlight } />
+        hoverLine =
+            <line
+            x1={ xScale(hoveredIndex) }
+            x2={ xScale(hoveredIndex) }
+            y1={ 0 }
+            y2={ chartHeight }
+            stroke={ colors.borderColor } />
+    }
+
 
     return (
       <StyledElevationChart style={ style }>
-          <Label>{ strings.ELEVATION_BOX_LABEL }</Label>
+          <Label>
+              { strings.ELEVATION_BOX_LABEL }
+              { hoveredElevation ? ` - ${hoveredElevation}ft` : null }
+          </Label>
           <svg height={ chartHeight + 1 } width={ chartWidth }>
               <g>
                   <path d={ elevationLine } fill="none" stroke="black" />
+
+                  { hoverCircle }
+                  
+                  { hoverLine }
 
                   <rect
                   height={ chartHeight }

@@ -3,7 +3,7 @@ import { withScriptjs, withGoogleMap, GoogleMap, Polyline } from "react-google-m
 
 export default Map = withScriptjs(withGoogleMap((props) => {
   
-	console.log( props )
+	// console.log( props )
 
 	var polylines = []
 	props.trails.forEach( (trail, index) => {

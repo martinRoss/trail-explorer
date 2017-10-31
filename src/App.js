@@ -7,9 +7,6 @@ import ElevationChart from './ElevationChart'
 class App extends Component {
   
   constructor(props) {
-    
-    console.log( 'constructor' )
-
     super(props)
 
     // Set initial state
@@ -17,10 +14,12 @@ class App extends Component {
       data: [],
       dataColumns: [],
       selectedTrail: null,
+      hoveredIndex: null,
     }
 
     // Bind this to instance functions
     this.setSelectedTrail = this.setSelectedTrail.bind(this)
+    this.hoveredIndex = this.hoveredIndex.bind(this)
 
     // async - load trail csv data and parse numeric values into ints/floats
     csv(`${process.env.PUBLIC_URL}/trails.csv`, data => {
@@ -41,19 +40,14 @@ class App extends Component {
 
   }
 
-  componentDidMount() {
-    
-    console.log('componentDidMount()')
-
-  }
-
   /**
    * Returns the index of the waypoint that corresponds to the
    * location the mouse is hovering over on the elevation chart
-   * @param {number} index Index of waypoint in currently selected track
+   * Only update if index changed for performance
+   * @param {number} hoveredIndex Index of waypoint in currently selected track
    */
-  hoveredIndex(index) {
-    console.log('Hover index -- ', index)
+  hoveredIndex(hoveredIndex) {
+    if (this.state.hoveredIndex !== hoveredIndex) this.setState({ hoveredIndex })
   }
 
   /**
@@ -66,8 +60,7 @@ class App extends Component {
   }
 
   render() {
-    const { selectedTrail } = this.state
-    console.log(this.state.data);
+    const { selectedTrail, hoveredIndex } = this.state
     return (
       <div className="App">
 
@@ -84,6 +77,7 @@ class App extends Component {
         <ElevationChart
         onMouseMove={ this.hoveredIndex }
         selectedTrail={ selectedTrail }
+        hoveredIndex={ hoveredIndex }
         style={{
           position: 'fixed',
           top: 30,
