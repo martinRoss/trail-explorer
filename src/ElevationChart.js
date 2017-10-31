@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Styled from 'styled-components'
 import { scaleLinear } from 'd3';
 import { line, curveNatural } from 'd3-shape';
@@ -6,13 +6,13 @@ import colors from './colors'
 import strings from './strings'
 
 // Width of the outer box
-const width = 400;
+const width = 400
 // Box Padding
-const padding = 14;
+const padding = 14
 // Chart width
 const chartWidth = width - (2 * padding)
 // Height of the chart
-const chartHeight = 80;
+const chartHeight = 80
 
 /**
  * Creates a styled component
@@ -41,7 +41,6 @@ const TrailLength = Styled.div`
     bottom: 0;
     right: 0;
 `
-
 
 /**
  * Styles the box label
@@ -72,7 +71,6 @@ const pluckElevationData = selectedTrail =>
  */
 const getElevationAtIndex = (selectedTrail, index) =>
     pluckElevationData(selectedTrail)[index]
-
 
 /**
  * Computes elevation domain
@@ -115,7 +113,7 @@ const grabRelativeXHover = event =>
  * Renders an interactive Elevation Chart
  * @extends Component
  */
-export default class ElevationChart extends Component {
+export default class ElevationChart extends PureComponent {
 /**
  * Set up interal reference to limit updates
  * @param {object} props Props passed from the parent component
@@ -172,7 +170,7 @@ export default class ElevationChart extends Component {
     // Send new hovered index if there is significant change
     const sendSelectedTrailHoverIndex = event => {
         const nextHoveredX = grabRelativeXHover(event)
-        const pixelBuffer = 2
+        const pixelBuffer = 1
         // Only update if moved more than buffer
         if (Math.abs(nextHoveredX - this.hoveredX) > pixelBuffer) {
             // Not using state to avoid render cycle
