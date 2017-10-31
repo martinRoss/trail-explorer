@@ -28,7 +28,20 @@ const StyledElevationChart = Styled.div`
     border: 1px solid ${colors.borderColor};
     text-align: left;
     padding: ${padding}px;
+    position: relative;
 `
+
+/**
+ * Style for the trail length
+ * @returns {object} label Styled Label
+ */
+const TrailLength = Styled.div`
+    font-size: 0.8rem;
+    position: aboslute;
+    bottom: 0;
+    right: 0;
+`
+
 
 /**
  * Styles the box label
@@ -103,6 +116,20 @@ const grabRelativeXHover = event =>
  * @extends Component
  */
 export default class ElevationChart extends Component {
+/**
+ * Set up interal reference to limit updates
+ * @param {object} props Props passed from the parent component
+ * @returns {void}
+ */
+  constructor(props) {
+      super(props)
+      this.hoveredX = -1
+  }
+
+  /**
+   * Render the elevation chart
+   * @returns {object} react element
+   */
   render() {
     // Pull out data and provide defaults
     const {
@@ -142,10 +169,17 @@ export default class ElevationChart extends Component {
     const getIndexFromHover = x =>
         Math.ceil(xScale.invert(x))
 
-    // Function to send index up to parent
-    // Pluck the x hover, get the index and then send it up
-    const sendSelectedTrailHoverIndex = event =>
-        onMouseMove(getIndexFromHover(grabRelativeXHover(event)))
+    // Send new hovered index if there is significant change
+    const sendSelectedTrailHoverIndex = event => {
+        const nextHoveredX = grabRelativeXHover(event)
+        const pixelBuffer = 2
+        // Only update if moved more than buffer
+        if (Math.abs(nextHoveredX - this.hoveredX) > pixelBuffer) {
+            // Not using state to avoid render cycle
+            this.hoveredX = nextHoveredX
+            onMouseMove(getIndexFromHover(this.hoveredX))
+        }
+    }
 
     // Elevation at hovered index
     const hoveredElevation = hoveredIndex ? getElevationAtIndex(selectedTrail, hoveredIndex) : null
@@ -172,7 +206,6 @@ export default class ElevationChart extends Component {
             stroke={ colors.borderColor } />
     }
 
-
     return (
       <StyledElevationChart style={ style }>
           <Label>
@@ -195,6 +228,7 @@ export default class ElevationChart extends Component {
 
               </g>
           </svg>
+          <TrailLength>{ `${selectedTrail.total_real_distance} miles` }</TrailLength>
       </StyledElevationChart>
     )
   }
