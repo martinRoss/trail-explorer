@@ -61,12 +61,14 @@ class App extends Component {
 
   render() {
     const { selectedTrail, hoveredIndex } = this.state
+
     return (
       <div className="App">
 
         <Map 
         setSelectedTrail={ this.setSelectedTrail }
         selectedTrail={ selectedTrail }
+        hoveredIndex={ hoveredIndex }
         trails = {this.state.data}
         mapTypeId = 'TERRAIN'
         googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"

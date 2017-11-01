@@ -106,8 +106,9 @@ const yRange = [0, chartHeight]
  * @param {event} event Hover event
  * @returns {number} x pixel coordinate
  */
-const grabRelativeXHover = event =>
-    event.pageX - event.currentTarget.getBoundingClientRect().x
+const grabRelativeXHover = event => {
+    return event.pageX - event.currentTarget.getBoundingClientRect().left
+}
 
 /**
  * Renders an interactive Elevation Chart
