@@ -158,7 +158,7 @@ export default class ElevationChart extends PureComponent {
     // Create line function
     const elevationLineFunc = line()
         .x((d, index) => xScale(index + 1))
-        .y(d => yScale(d))
+        .y(d => chartHeight - yScale(d))
         .curve(curveNatural)
     
     // Create line path
@@ -191,7 +191,7 @@ export default class ElevationChart extends PureComponent {
         hoverCircle =
             <circle
             cx={ xScale(hoveredIndex) }
-            cy={ yScale(hoveredElevation) }
+            cy={ chartHeight - yScale(hoveredElevation) }
             r={ 5 }
             strokeWidth={ 1 }
             fill={ colors.boxBackground }
