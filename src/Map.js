@@ -9,41 +9,41 @@ export default Map = withScriptjs(withGoogleMap((props) => {
         hoveredIndex
     } = props
 
+    //loop throught trails in props and create Google Maps Polyline for each
 	var polylines = []
 	props.trails.forEach( (trail, index) => {
 		
-		//assemble coordiates in appropriate format for gmaps library
+        //parse trail GeoJSON into in memory JavaScript object
 		let featureCollection = JSON.parse(trail.geoJson) 
-		let coodinates = featureCollection.features[0].geometry.coordinates.map( coord =>{
+		
+        //loop through trail coordinates and convert into Google Maps friendly format
+        let coodinates = featureCollection.features[0].geometry.coordinates.map( coord =>{
 			return {
 				lat: coord[1],
 				lng: coord[0]
 			}
         });
         
-        const setSelectedTrail = () => { props.setSelectedTrail(trail) }
-
-        //set polyline style based on if it is the selectedTrail or not
+        //set Polyline styles based on if selected trail
         let polylineStyle = {};
         if (selectedTrail) {
-        	//is the selected trail!
         	if (selectedTrail.name === trail.name) polylineStyle = { strokeColor: '#d38900', strokeOpacity: 1 };
-        	//is not the selected trial!
         	else polylineStyle = { strokeColor: 'blue', strokeOpacity: .5 };
-        //there is no selected trail
     	} else polylineStyle = { strokeColor: 'blue', strokeOpacity: 1 };
 
+        //add the Polyline to the polylines array
 		polylines.push(
 			<Polyline
-            onClick={ setSelectedTrail }
-            options={ polylineStyle } 
-            key={'trail-' + index}
-            path={ coodinates } />
+                onClick={ () => { props.setSelectedTrail(trail) } }
+                options={ polylineStyle } 
+                key={'trail-' + index}
+                path={ coodinates } />
 		)
 		
 	});
 
-	//resolve selected trail hover index Marker
+	//if a hover index is supplied in props, look up the GPS coordiates at the index 
+    //  and create a Google Maps Marker at that location
 	let selectedIndexMarker = null;
 	if (hoveredIndex && typeof hoveredIndex !== 'undefined' && !!selectedTrail){
 		let featureCollection = JSON.parse(selectedTrail.geoJson); 
@@ -52,11 +52,14 @@ export default Map = withScriptjs(withGoogleMap((props) => {
 			selectedIndexMarker = <Marker position={{ lat: coordinate[1], lng: coordinate[0] }} />
 	}
 
-  return <GoogleMap
-    defaultZoom={10}
-    defaultCenter={{ lat: 38.4350512, lng: -78.870104 }}
-  >
-    { polylines }
-    { selectedIndexMarker }
-  </GoogleMap>
+    //return the React object that represents the Google Map, Polylines, and Marker to added
+    //  rendered into the browser
+    return <GoogleMap
+        defaultZoom={10}
+        defaultCenter={{ lat: 38.4350512, lng: -78.870104 }} >
+        
+        { polylines }
+        { selectedIndexMarker }
+
+    </GoogleMap>
 }))

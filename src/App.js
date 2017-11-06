@@ -6,6 +6,12 @@ import ElevationChart from './ElevationChart'
 
 class App extends Component {
   
+  /**
+   * Standard App constructure responsible for setting the initial app state
+   * values, binding statically declared functions to App object instances, and 
+   * asychronously loaded in the CSV trail data from a CSV file.
+   * @returns {void}
+   */
   constructor(props) {
     super(props)
 
@@ -31,6 +37,7 @@ class App extends Component {
         })
       })
 
+      //save trail data into state , trigger rerender of this component
       this.setState({
         data: data,
         dataColumns: Object.keys(data[0]),
@@ -59,6 +66,13 @@ class App extends Component {
     this.setState({ selectedTrail })
   }
 
+  /**
+   * React render function incharge of rendering the component into the browser bt
+   * creating DOM elements based on the values of the app state variables. Some variables
+   * (known in the React work as props) are passed down to child components Map and Elevation
+   * Chart.
+   * @returns {void}
+   */
   render() {
     const { selectedTrail, hoveredIndex } = this.state
 
@@ -66,25 +80,25 @@ class App extends Component {
       <div className="App">
 
         <Map 
-        setSelectedTrail={ this.setSelectedTrail }
-        selectedTrail={ selectedTrail }
-        hoveredIndex={ hoveredIndex }
-        trails = {this.state.data}
-        mapTypeId = 'TERRAIN'
-        googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
-        loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: '100%', width: '100%' ,position: 'absolute' }} />}
-        mapElement={<div style={{ height: `100%` }} /> } />
+          setSelectedTrail={ this.setSelectedTrail }
+          selectedTrail={ selectedTrail }
+          hoveredIndex={ hoveredIndex }
+          trails = {this.state.data}
+          googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: '100%', width: '100%',position: 'absolute' }} />}
+          mapElement={<div style={{ height: `100%` }} /> } />
 
         <ElevationChart
-        onMouseMove={ this.hoveredIndex }
-        selectedTrail={ selectedTrail }
-        hoveredIndex={ hoveredIndex }
-        style={{
-          position: 'fixed',
-          top: 30,
-          right: 30
-        }} />
+          onMouseMove={ this.hoveredIndex }
+          setSelectedTrail={ this.setSelectedTrail }
+          selectedTrail={ selectedTrail }
+          hoveredIndex={ hoveredIndex }
+          style={{
+            position: 'fixed',
+            top: 30,
+            right: 30
+          }} />
 
       </div>
     );
