@@ -133,6 +133,7 @@ export default class ElevationChart extends PureComponent {
     // Pull out data and provide defaults
     const {
         style,
+        setSelectedTrail,
         selectedTrail,
         onMouseMove,
         hoveredIndex
@@ -228,6 +229,7 @@ export default class ElevationChart extends PureComponent {
               </g>
           </svg>
           <TrailLength>{ `${selectedTrail.total_real_distance} miles` }</TrailLength>
+          <div id='closeButton' onClick={ () => { setSelectedTrail() } }>close</div>
       </StyledElevationChart>
     )
   }
