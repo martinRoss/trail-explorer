@@ -76,6 +76,8 @@ class App extends Component {
   render() {
     const { selectedTrail, hoveredIndex } = this.state
 
+    const googleMapsAPIKey = process.env.GOOGLE_MAPS_API_KEY ? `key={process.env.GOOGLE_MAP_API_KEY}` : ''
+
     return (
       <div className="App">
 
@@ -84,7 +86,7 @@ class App extends Component {
         selectedTrail={ selectedTrail }
         hoveredIndex={ hoveredIndex }
         trails = {this.state.data}
-        googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
+        googleMapURL={ `https://maps.googleapis.com/maps/api/js?${googleMapsAPIKey}&v=3.exp&libraries=geometry` }
         loadingElement={<div style={{ height: `100%` }} />}
         containerElement={<div style={{ height: '100%', width: '100%',position: 'absolute' }} />}
         mapElement={<div style={{ height: `100%` }} /> } />
