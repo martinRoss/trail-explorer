@@ -2,6 +2,7 @@
   "name": "trail-explorer",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://martinross.github.io/trail-explorer/",
   "dependencies": {
     "d3": "^4.10.2",
     "react": "^16.0.0",
