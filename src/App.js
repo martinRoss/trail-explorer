@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import './App.css'
 import { csv } from 'd3'
-import Map from './Map'
-import ElevationChart from './ElevationChart'
+import Map from './components/Map'
+import ElevationChart from './components/ElevationChart'
 
 class App extends Component {
   
@@ -80,25 +80,29 @@ class App extends Component {
       <div className="App">
 
         <Map 
-          setSelectedTrail={ this.setSelectedTrail }
-          selectedTrail={ selectedTrail }
-          hoveredIndex={ hoveredIndex }
-          trails = {this.state.data}
-          googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
-          loadingElement={<div style={{ height: `100%` }} />}
-          containerElement={<div style={{ height: '100%', width: '100%',position: 'absolute' }} />}
-          mapElement={<div style={{ height: `100%` }} /> } />
+        setSelectedTrail={ this.setSelectedTrail }
+        selectedTrail={ selectedTrail }
+        hoveredIndex={ hoveredIndex }
+        trails = {this.state.data}
+        googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: '100%', width: '100%',position: 'absolute' }} />}
+        mapElement={<div style={{ height: `100%` }} /> } />
 
-        <ElevationChart
-          onMouseMove={ this.hoveredIndex }
-          setSelectedTrail={ this.setSelectedTrail }
-          selectedTrail={ selectedTrail }
-          hoveredIndex={ hoveredIndex }
-          style={{
-            position: 'fixed',
-            top: 30,
-            right: 30
-          }} />
+        {
+            selectedTrail ? (
+                <ElevationChart
+                onMouseMove={ this.hoveredIndex }
+                setSelectedTrail={ this.setSelectedTrail }
+                selectedTrail={ selectedTrail }
+                hoveredIndex={ hoveredIndex }
+                style={{
+                  position: 'fixed',
+                  top: 30,
+                  right: 30
+                }} />
+            ) : null
+        }
 
       </div>
     );

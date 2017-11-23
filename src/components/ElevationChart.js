@@ -1,18 +1,20 @@
 import React, { PureComponent } from 'react'
 import Styled from 'styled-components'
-import { scaleLinear } from 'd3';
-import { line, curveNatural } from 'd3-shape';
-import colors from './colors'
-import strings from './strings'
+import { scaleLinear } from 'd3'
+import { line, curveNatural } from 'd3-shape'
+import colors from '../colors'
+import strings from '../strings'
+import constants from '../constants'
 
-// Width of the outer box
-const width = 400
-// Box Padding
-const padding = 14
+// Pull out and locally name constants
+const {
+    elevationChartHeight: chartHeight,
+    modalWidth: width,
+    elevationChartPadding: padding,
+} = constants;
+
 // Chart width
 const chartWidth = width - (2 * padding)
-// Height of the chart
-const chartHeight = 80
 
 /**
  * Creates a styled component
@@ -138,10 +140,6 @@ export default class ElevationChart extends PureComponent {
         onMouseMove,
         hoveredIndex
     } = this.props
-
-    // If no trail is selected return nothing
-    if (!selectedTrail) return null
-    // Nothing below happens if no trail is selected -- do these checks early for peformance
 
     // Pluck elevation
     const elevations = pluckElevationData(selectedTrail)

@@ -10,7 +10,7 @@ export default Map = withScriptjs(withGoogleMap((props) => {
     } = props
 
     //loop throught trails in props and create Google Maps Polyline for each
-	var polylines = []
+	const polylines = []
 	props.trails.forEach( (trail, index) => {
 		
         //parse trail GeoJSON into in memory JavaScript object
