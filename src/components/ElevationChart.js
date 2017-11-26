@@ -5,13 +5,15 @@ import { line, curveNatural } from 'd3-shape'
 import colors from '../colors'
 import strings from '../strings'
 import constants from '../constants'
+import { throttle } from '../utilities'
+import { geoAlbers } from 'd3/node_modules/d3-geo';
 
 // Pull out and locally name constants
 const {
     elevationChartHeight: chartHeight,
     modalWidth: width,
     elevationChartPadding: padding,
-} = constants;
+} = constants
 
 // Chart width
 const chartWidth = width - (2 * padding)
@@ -179,29 +181,40 @@ export default class ElevationChart extends PureComponent {
         }
     }
 
+    const sendSelectedTrailHoverIndexThrottled = event => throttle(sendSelectedTrailHoverIndex(event), 50)
+
+
     // Elevation at hovered index
     const hoveredElevation = hoveredIndex ? getElevationAtIndex(selectedTrail, hoveredIndex) : null
 
     // Build circle for current elevation if there is one
-    // null references are not rendered
-    let hoverCircle = null
-    let hoverLine = null
+    let hoverG = null
     if (hoveredElevation) {
-        hoverCircle =
+        const transX = xScale(hoveredIndex)
+        const transY = chartHeight - yScale(hoveredElevation)
+        const radius = 5
+        const circleStrokeWidth = 1
+        const hoverCircle =
             <circle
-            cx={ xScale(hoveredIndex) }
-            cy={ chartHeight - yScale(hoveredElevation) }
-            r={ 5 }
-            strokeWidth={ 1 }
+            cx={ 0 }
+            cy={ 0 }
+            transform={ `translate(0, ${transY})`}
+            r={ radius }
+            strokeWidth={ circleStrokeWidth }
             fill={ colors.boxBackground }
             stroke={ colors.elevationHighlight } />
-        hoverLine =
+        const hoverLine =
             <line
-            x1={ xScale(hoveredIndex) }
-            x2={ xScale(hoveredIndex) }
+            x1={ 0 }
+            x2={ 0 }
             y1={ 0 }
             y2={ chartHeight }
             stroke={ colors.borderColor } />
+        hoverG =
+            <g transform={ `translate(${transX})`}>
+               { hoverCircle }
+               { hoverLine }
+            </g>
     }
 
     return (
@@ -214,14 +227,12 @@ export default class ElevationChart extends PureComponent {
               <g>
                   <path d={ elevationLine } fill="none" stroke="black" />
 
-                  { hoverCircle }
+                  { hoverG }
                   
-                  { hoverLine }
-
                   <rect
                   height={ chartHeight }
                   width={ chartWidth }
-                  onMouseMove={ sendSelectedTrailHoverIndex }
+                  onMouseMove={ sendSelectedTrailHoverIndexThrottled }
                   style={{ pointerEvents: 'all', fill: 'none', stroke: 'none' }} />
 
               </g>
