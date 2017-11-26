@@ -3,6 +3,7 @@ import './App.css'
 import { csv } from 'd3'
 import Map from './components/Map'
 import ElevationChart from './components/ElevationChart'
+import ThreeDMap from './components/ThreeDMap'
 
 class App extends Component {
   
@@ -93,16 +94,22 @@ class App extends Component {
 
         {
             selectedTrail ? (
-                <ElevationChart
-                onMouseMove={ this.hoveredIndex }
-                setSelectedTrail={ this.setSelectedTrail }
-                selectedTrail={ selectedTrail }
-                hoveredIndex={ hoveredIndex }
+                <div
                 style={{
                   position: 'fixed',
                   top: 30,
                   right: 30
-                }} />
+                }}>
+                    <ElevationChart
+                    onMouseMove={ this.hoveredIndex }
+                    setSelectedTrail={ this.setSelectedTrail }
+                    selectedTrail={ selectedTrail }
+                    hoveredIndex={ hoveredIndex }
+                    />
+                    <ThreeDMap
+                    selectedTrail={ selectedTrail }
+                    hoveredIndex={ hoveredIndex } />
+                </div>
             ) : null
         }
 
