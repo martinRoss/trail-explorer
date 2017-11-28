@@ -4,6 +4,10 @@
   "private": true,
   "homepage": "https://martinross.github.io/trail-explorer/",
   "dependencies": {
+    "@turf/bbox": "^5.0.4",
+    "@turf/center": "^5.0.4",
+    "@turf/helpers": "^5.0.4",
+    "@turf/length": "^5.0.4",
     "d3": "^4.10.2",
     "d3-geo": "^1.9.0",
     "react": "^16.0.0",

@@ -2,6 +2,51 @@
 # yarn lockfile v1
 
 
+"@turf/bbox@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-5.0.4.tgz#5c3d288f9900661cbdc173cd46041c13829af311"
+  dependencies:
+    "@turf/helpers" "^5.0.4"
+    "@turf/meta" "^5.0.4"
+
+"@turf/center@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/center/-/center-5.0.4.tgz#32bf142564c1fd2b5ed6ddc24f452f48822020b1"
+  dependencies:
+    "@turf/bbox" "^5.0.4"
+    "@turf/helpers" "^5.0.4"
+
+"@turf/distance@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/distance/-/distance-5.0.4.tgz#0ef58ec9a08403bdaef7bf420cb2c9d04cc69257"
+  dependencies:
+    "@turf/helpers" "^5.0.4"
+    "@turf/invariant" "^5.0.4"
+
+"@turf/helpers@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-5.0.4.tgz#e47a4e4f38dee3b47a3177a69de162d7a7a5837f"
+
+"@turf/invariant@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-5.0.4.tgz#1cc305f4de7c0f1bfd9d7c420aac282051262b41"
+  dependencies:
+    "@turf/helpers" "^5.0.4"
+
+"@turf/length@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/length/-/length-5.0.4.tgz#6a1a1f1cb5931d8e29c9cc0bce21a96b717a1937"
+  dependencies:
+    "@turf/distance" "^5.0.4"
+    "@turf/helpers" "^5.0.4"
+    "@turf/meta" "^5.0.4"
+
+"@turf/meta@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-5.0.4.tgz#b41d08f19d2ecc934805b6d713a663abd9f83213"
+  dependencies:
+    "@turf/helpers" "^5.0.4"
+
 abab@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.4.tgz#5faad9c2c07f60dd76770f71cf025b62a63cfd4e"
