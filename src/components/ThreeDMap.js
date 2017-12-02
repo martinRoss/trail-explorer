@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh, Geometry } from 'three'
+import { Scene, PerspectiveCamera, WebGLRenderer, LineBasicMaterial, Line, Geometry, Vector3 } from 'three'
 import { geoMercator } from 'd3-geo'
 import bbox from '@turf/bbox'
 import length from '@turf/length'
@@ -13,7 +13,7 @@ import constants from '../constants'
 const { threeDChartHeight: height, modalWidth: width } = constants
 
 // Chosen projection
-const projection = null
+const projection = geoMercator
 
 // Scene field of view (fov)
 const fov = 75
@@ -24,11 +24,20 @@ const near = 0.1
 // Camera frustum far plane. (don't render things in the distance)
 const far = 1000
 
+// Feet in a mile
+const feetInAMile = 5280
+
+// Track line material
+const trackMaterial = new LineBasicMaterial({
+  color: 0xffffff,
+  linewidth: 6
+})
+
 // Set up css for the canvas
 const StyledRoot = Styled.div`
     & canvas {
       height: ${height}px;
-      widht: ${width}px;
+      width: ${width}px;
     }
 `
 
@@ -74,15 +83,44 @@ export default class ThreeDMap extends PureComponent {
     const [minX, minY, maxX, maxY] = featBBox
     const latLength = length(lineString([[minX, minY], [minX, maxY]]), { units: 'miles' })
     const longLength = length(lineString([[minX, minY], [maxX, minY]]), { units: 'miles' })
-    const maxLength = Math.max(latLength, longLength)
+    const terrainSizeMiles = Math.max(latLength, longLength)
+    // ToDo: compute how many pixels per foot
+    const terrainSizeFt = terrainSizeMiles * feetInAMile
+    const pixelsPerFt = width / terrainSizeFt
+    console.log(height, width)
     this.projection = geoMercator()
-      .translate(maxLength / 2, maxLength / 2)
-      .center(center(geoJSON))
+      .translate([width / 2, height / 2])
+      .center(center(geoJSON).geometry.coordinates)
+      .scale(width * 100)
 
     // Center the camera
-    this.camera.position.set(0, -longLength / 2, latLength / 2);
-    // Setup THREE geometry
-    const trackGeom = new Geometry()
+    this.camera.position.set(0, -width / 2, height);
+
+    // Create THREE geometries for features in geoJson
+    for (let i = 0; i < geoJSON.features.length; i++) {
+      const feature = geoJSON.features[i]
+      if (feature.geometry.type === 'LineString') {
+        const featGeom = new Geometry()
+        feature.geometry.coordinates.forEach(point => {
+          const [lon, lat, ele] = point
+          const [projectedLon, projectedLat] = this.projection([lon, lat])
+          const projectedEle = ele * pixelsPerFt
+          featGeom.vertices.push(new Vector3(
+            projectedLon - (width / 2),
+            projectedEle,
+            projectedLat - (height / 2)
+          ))
+        })
+        // Create and add the line to the scene
+        this.currentTrack = new Line(featGeom, trackMaterial)
+        this.currentTrack.name = 'current_track'
+        // Remove old tracks
+        const trackObj = this.scene.getObjectByName(this.currentTrack.name)
+        if (!!trackObj) this.scene.remove(trackObj)
+        // Add new track
+        this.scene.add(this.currentTrack)
+      }
+    }
   }
   
 
@@ -103,28 +141,12 @@ export default class ThreeDMap extends PureComponent {
 
       const render = () => {
           //this.controls.update()
-          requestAnimationFrame(render)
+          this.currentTrack.rotation.y += 0.01
           this.renderer.render(this.scene, this.camera)
+          requestAnimationFrame(render)
       }
 
       render()
-
-      // Just using sample code
-      // this.geometry = new BoxGeometry( 1, 1, 1 )
-			// this.material = new MeshBasicMaterial( { color: 0x00ff00 } )
-			// this.cube = new Mesh(this.geometry, this.material)
-			// this.scene.add(this.cube)
-			// this.camera.position.z = 5
-			// const animate = () => {
-			// 	requestAnimationFrame(animate)
-
-			// 	this.cube.rotation.x += 0.1
-			// 	this.cube.rotation.y += 0.1
-
-			// 	this.renderer.render(this.scene, this.camera)
-			// }
-
-			// animate()
   }
 
   /**
