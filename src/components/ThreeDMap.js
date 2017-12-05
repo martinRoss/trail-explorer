@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import { Scene, PerspectiveCamera, WebGLRenderer, LineBasicMaterial, Line, Geometry, Vector3 } from 'three'
+import TrackballControls from '../lib/three/TrackballControls'
 import { geoMercator } from 'd3-geo'
 import bbox from '@turf/bbox'
 import length from '@turf/length'
@@ -8,7 +9,6 @@ import center from '@turf/center'
 import { lineString } from '@turf/helpers'
 import Styled from 'styled-components'
 import constants from '../constants'
-
 // Localizing naming of variables
 const { threeDChartHeight: height, modalWidth: width } = constants
 
@@ -16,7 +16,7 @@ const { threeDChartHeight: height, modalWidth: width } = constants
 const projection = geoMercator
 
 // Scene field of view (fov)
-const fov = 75
+const fov = 50
 
 // Camera frustum near plane. (don't render things too close)
 const near = 0.1
@@ -91,10 +91,10 @@ export default class ThreeDMap extends PureComponent {
     this.projection = geoMercator()
       .translate([width / 2, height / 2])
       .center(center(geoJSON).geometry.coordinates)
-      .scale(width * 100)
+      .scale(width * 106)
 
     // Center the camera
-    this.camera.position.set(0, -width / 2, height);
+    this.camera.position.set(0, 0, height);
 
     // Create THREE geometries for features in geoJson
     for (let i = 0; i < geoJSON.features.length; i++) {
@@ -132,20 +132,22 @@ export default class ThreeDMap extends PureComponent {
       this.scene = new Scene()
       this.camera = new PerspectiveCamera(fov, width / height, near, far)
       this.renderer = new WebGLRenderer()
-      //this.controls = new TrackballControls(this.camera)
       this.renderer.setSize(width, height)
-      ReactDOM.findDOMNode(this.sceneDom).appendChild(this.renderer.domElement)
+
+      this.sceneDOM = ReactDOM.findDOMNode(this.sceneDom)
+      this.sceneDOM.appendChild(this.renderer.domElement)
+      // Set up trackball controls
+      this.controls = new TrackballControls(this.camera, this.renderer.domElement)
 
       // Setup trail
       this.updateSceneWithNewTrail()
 
       const render = () => {
-          //this.controls.update()
-          this.currentTrack.rotation.y += 0.01
           this.renderer.render(this.scene, this.camera)
+          this.controls.update()
           requestAnimationFrame(render)
       }
-
+      // Initial render
       render()
   }
 
