@@ -44,6 +44,9 @@ const trackMaterial = new LineBasicMaterial({
   linewidth: 6
 })
 
+// Name of current track
+const TRACK_NAME = 'current_track'
+
 // Set up css for the canvas
 const StyledRoot = Styled.div`
     & canvas {
@@ -63,13 +66,6 @@ export default class ThreeDMap extends PureComponent {
     this.setupScene = this.setupScene.bind(this)
     this.updateSceneWithNewTrail = this.updateSceneWithNewTrail.bind(this)
   }
-
-  /**
-   * Let THREE do the updating, return false
-   * @return {boolean} shouldComponentUpdate 
-   */
-  // Switch to Component vs. PureComponent...
-  // shouldComponentUpdate = () => false
 
   /**
    * Kickoff scene creation on mount
@@ -102,9 +98,6 @@ export default class ThreeDMap extends PureComponent {
       .center(center(geoJSON).geometry.coordinates)
       .scale(width * 106)
 
-    // Center the camera
-    this.camera.position.set(-150, 110, 150);
-
     // Create THREE geometries for features in geoJson
     for (let i = 0; i < geoJSON.features.length; i++) {
       const feature = geoJSON.features[i]
@@ -122,13 +115,15 @@ export default class ThreeDMap extends PureComponent {
         })
         // Create and add the line to the scene
         const track = new Line(featGeom, trackMaterial)
+        track.name = TRACK_NAME
+        // Add new track
+        this.scene.add(track)
         if (typeof this.currentTrack !== 'undefined') {
           this.currentTrack.geometry.dispose()
           this.currentTrack.material.dispose()
-          this.scene.remove(this.currentTrack)
+          this.scene.remove(this.scene.getObjectByName(TRACK_NAME))
         }
-        // Add new track
-        this.scene.add(track)
+        // Not updating properly
         this.currentTrack = track
       }
     }
@@ -142,6 +137,7 @@ export default class ThreeDMap extends PureComponent {
   setupScene = () => {
       this.scene = new Scene()
       this.camera = new PerspectiveCamera(fov, width / height, near, far)
+      this.camera.position.set(-150, 110, 150);
       this.renderer = new WebGLRenderer()
       this.renderer.setSize(width, height)
 
