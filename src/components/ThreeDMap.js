@@ -1,6 +1,17 @@
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
-import { Scene, PerspectiveCamera, WebGLRenderer, LineBasicMaterial, Line, Geometry, Vector3, GridHelper } from 'three'
+import {
+  Scene,
+  PerspectiveCamera,
+  WebGLRenderer,
+  LineBasicMaterial,
+  Line,
+  Geometry,
+  Vector3,
+  GridHelper,
+  AmbientLight,
+  DirectionalLight
+} from 'three'
 import TrackballControls from '../lib/three/TrackballControls'
 import { geoMercator } from 'd3-geo'
 import bbox from '@turf/bbox'
@@ -22,7 +33,7 @@ const fov = 50
 const near = 0.1
 
 // Camera frustum far plane. (don't render things in the distance)
-const far = 1000
+const far = 10000
 
 // Feet in a mile
 const feetInAMile = 5280
@@ -92,7 +103,7 @@ export default class ThreeDMap extends PureComponent {
       .scale(width * 106)
 
     // Center the camera
-    this.camera.position.set(0, 0, height);
+    this.camera.position.set(-150, 110, 150);
 
     // Create THREE geometries for features in geoJson
     for (let i = 0; i < geoJSON.features.length; i++) {
@@ -137,6 +148,13 @@ export default class ThreeDMap extends PureComponent {
       // Set up a reference grid
       const helper = new GridHelper(width, 20)
       this.scene.add(helper)
+
+      // Add lights
+      const ambientLight = new AmbientLight(0xffffff, 0.2)
+      this.scene.add(ambientLight)
+      const directionalLight = new DirectionalLight(0xffffff, 0.8)
+      directionalLight.position.set(1, 1, - 1)
+      this.scene.add(directionalLight)
 
       this.sceneDOM = ReactDOM.findDOMNode(this.sceneDom)
       this.sceneDOM.appendChild(this.renderer.domElement)
