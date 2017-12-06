@@ -39,11 +39,6 @@ module.exports = TrackballControls = function ( object, domElement ) {
         this.minDistance = 0;
         this.maxDistance = Infinity;
     
-
-
-
-
-
         this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
     
         // internals

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
-import { Scene, PerspectiveCamera, WebGLRenderer, LineBasicMaterial, Line, Geometry, Vector3 } from 'three'
+import { Scene, PerspectiveCamera, WebGLRenderer, LineBasicMaterial, Line, Geometry, Vector3, GridHelper } from 'three'
 import TrackballControls from '../lib/three/TrackballControls'
 import { geoMercator } from 'd3-geo'
 import bbox from '@turf/bbox'
@@ -84,10 +84,8 @@ export default class ThreeDMap extends PureComponent {
     const latLength = length(lineString([[minX, minY], [minX, maxY]]), { units: 'miles' })
     const longLength = length(lineString([[minX, minY], [maxX, minY]]), { units: 'miles' })
     const terrainSizeMiles = Math.max(latLength, longLength)
-    // ToDo: compute how many pixels per foot
     const terrainSizeFt = terrainSizeMiles * feetInAMile
     const pixelsPerFt = width / terrainSizeFt
-    console.log(height, width)
     this.projection = geoMercator()
       .translate([width / 2, height / 2])
       .center(center(geoJSON).geometry.coordinates)
@@ -112,13 +110,15 @@ export default class ThreeDMap extends PureComponent {
           ))
         })
         // Create and add the line to the scene
-        this.currentTrack = new Line(featGeom, trackMaterial)
-        this.currentTrack.name = 'current_track'
-        // Remove old tracks
-        const trackObj = this.scene.getObjectByName(this.currentTrack.name)
-        if (!!trackObj) this.scene.remove(trackObj)
+        const track = new Line(featGeom, trackMaterial)
+        if (typeof this.currentTrack !== 'undefined') {
+          this.currentTrack.geometry.dispose()
+          this.currentTrack.material.dispose()
+          this.scene.remove(this.currentTrack)
+        }
         // Add new track
-        this.scene.add(this.currentTrack)
+        this.scene.add(track)
+        this.currentTrack = track
       }
     }
   }
@@ -133,6 +133,10 @@ export default class ThreeDMap extends PureComponent {
       this.camera = new PerspectiveCamera(fov, width / height, near, far)
       this.renderer = new WebGLRenderer()
       this.renderer.setSize(width, height)
+
+      // Set up a reference grid
+      const helper = new GridHelper(width, 20)
+      this.scene.add(helper)
 
       this.sceneDOM = ReactDOM.findDOMNode(this.sceneDom)
       this.sceneDOM.appendChild(this.renderer.domElement)
