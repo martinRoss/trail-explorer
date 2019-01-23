@@ -185,7 +185,7 @@ export default class ElevationChart extends PureComponent {
 
 
     // Elevation at hovered index
-    const hoveredElevation = hoveredIndex ? getElevationAtIndex(selectedTrail, hoveredIndex) : null
+    const hoveredElevation = hoveredIndex ? Math.floor(getElevationAtIndex(selectedTrail, hoveredIndex)) : null
 
     // Build circle for current elevation if there is one
     let hoverG = null
