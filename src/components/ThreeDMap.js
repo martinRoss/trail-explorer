@@ -24,7 +24,7 @@ import constants from '../constants'
 const { threeDChartHeight: height, modalWidth: width } = constants
 
 // Chosen projection
-const projection = geoMercator
+// const projection = geoMercator
 
 // Scene field of view (fov)
 const fov = 50
@@ -78,14 +78,20 @@ export default class ThreeDMap extends PureComponent {
    * @param {object} nextProps Next props
    * @returns {void}
    */
-  
+
   componentWillReceiveProps(nextProps) {
       if (this.props.selectedTrail !== nextProps.selectedTrail) this.updateSceneWithNewTrail()
   }
 
   updateSceneWithNewTrail = () => {
     const { selectedTrail } = this.props
-    const geoJSON = JSON.parse(selectedTrail.geoJson)
+    let geoJSON
+    try {
+        geoJSON = JSON.parse(selectedTrail.geoJson)
+    } catch (e) {
+        console.log("Error parsing selected trail geoJSON")
+        return
+    }
     const featBBox = bbox(geoJSON)
     const [minX, minY, maxX, maxY] = featBBox
     const latLength = length(lineString([[minX, minY], [minX, maxY]]), { units: 'miles' })
@@ -128,7 +134,7 @@ export default class ThreeDMap extends PureComponent {
       }
     }
   }
-  
+
 
   /**
    * Sets up the scene for the 3d trail
@@ -172,6 +178,6 @@ export default class ThreeDMap extends PureComponent {
   /**
    * React is not doing much here, just creating a DOM container and references for THREE to append into
    * @returns {object} ReactElement
-   */ 
+   */
   render = () => <StyledRoot ref={ c => { this.sceneDom = c; } } />
 }
